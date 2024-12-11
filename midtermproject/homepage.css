@@ -1,0 +1,97 @@
+@font-face {
+    font-family: title-font;
+    src: url("titlefont/thedeadsaloon-Regular.ttf");
+}
+
+@font-face {
+    font-family: body-font;
+    src: url("titlefont/kirsty rg.otf");
+}
+
+h1 {
+    text-align: center;
+    margin-top: 5%;
+    font-size: 100px;
+    font-family: title-font;
+}
+
+p {
+    text-align: center;
+    font-size: 24px;
+    font-family: body-font;
+}
+
+body {
+    background-image: url("store/images/drawing-desert-with-landscape-background_889056-167277.avif");
+    background-size: cover;
+}
+
+#board {
+    display: block;
+    padding: 10px 20px;
+    font-size: 30px;
+    margin: 0 auto;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+#playText {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 75px;
+    font-family: title-font;
+    color: white;
+}
+
+#parent {
+    position: relative;
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#parent:hover #board {
+    transform: scale(1.1);
+}
+
+#parent:hover #playText {
+    color: yellow;
+}
+
+.top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    text-align: center;
+    font-family: body-font;
+
+}
+
+.top img {
+    width: 7%;
+    height: 7%;
+    margin-right: 10px;
+    vertical-align: middle;
+
+}
+
+h2 {
+    font-size: 16px;
+    font-weight: normal;
+    margin: 0;
+    text-align: center;
+}
+
+.centered-content {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+    justify-self: center;
+    justify-content: center;
+    justify-items: center;
+}

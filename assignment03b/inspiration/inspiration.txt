@@ -1,0 +1,7 @@
+The game im trying to make is inspired by one of the 'modules' in a game called "Keep Talking and Nobody Explodes". 
+It is a 2-player game where one player has the layout of the maze and the other player has the character and objective's position. 
+They must communicate without seeing the other's screen to solve the maze.
+I want to make a game similar to that 
+I'd like to have different mazes every game
+The real game is under time constraints so I woukd like to make something of that sort.
+I also plan to make it single player and add my own twist to it

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en-us">
+<head>
+    <title>Circuit Breaker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/addons/p5.sound.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: grey;
+        }
+        #container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        #highScoreDisplay {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background-color: #fdd835;
+            border-radius: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            color: #333;
+            font-size: 16px;
+            z-index: 1000;
+        }
+        #mazeCanvas, #gameplayCanvas {
+            width: 400px;
+            height: 400px;
+            display: block;
+            margin: 10px;
+            border: 2px solid #ccc;
+            background-color: white;
+        }
+        #gameButtons {
+            display: none;
+            text-align: center;
+            padding-top: 20px;
+        }
+        #gameOverMessage {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: red;
+            font-size: 48px;
+            z-index: 1000;
+        }
+        button {
+            margin-right: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #333;
+            background-color: #fdd835;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e6c800;
+        }
+        button:disabled {
+            color: #ccc;
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+        #startScreen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            position: absolute;
+            top: 10%;
+        }
+        .textBox {
+            width: 80%;
+            padding: 20px;
+            margin-top: 20px;
+            background-color: #f4f4f4;
+            border-radius: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+        }
+        h1 {
+          color: goldenrod;
+          text-align:center;
+        }
+        h2 {
+            text-align: center;
+        }
+        h3 {
+            color: goldenrod;
+            position: absolute;
+            top: 5%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="startScreen">
+        <div>
+            <h1> Circuit Breakers</h1>
+            <h2>Select Difficulty:</h2>
+            <button id="1">Easy</button>
+            <button id="2">Medium</button>
+            <button id="3">Hard</button>
+        </div>
+        <div class="textBox">Theme:<br> You are a robot tasked with extinguishing fires on a circuit board. However, the board's wires are invisibly small and extremely sensitive—contact with them will break the circuit. Fortunately, you have a blueprint to help navigate these hidden hazards. Additionally, letting any fire burn for longer than 40 seconds causes the circuit to break. You, the robot, have the ability to teleport to a random location every 15 seconds
+        <br>Documentation:<br> Each fire extinguished grants you one point. Hitting a wire results in a loss. Hitting the border is okay. A fire burning for longer than 40 seconds causes a loss. The maze of wires shifts after every game. Difficulty represents how many fires you need to juggle (Easy=1, Medium=2, Hard=3). Teleportation is completely random, including the same grid. Movement is tile based. The maze is 10x10 grids and is always solvable. Highscores are tracked locally.<br>
+        Inspiration:<br> This game is inspired by one of the 'modules' in a game called "Keep Talking and Nobody Explodes". It is a 2-player game where one player has the layout of the maze and the other player has the character and objective's position. They must communicate without seeing the other's screen to solve the maze. Link to the Maze module wiki <a href="https://ktane.fandom.com/wiki/Maze">Maze Wiki</a> <br><br> Here is an example video I found on youtube showing the module. Unfortunately it doesnt show the other person's screens but it is a manual showing the possible mazes:<br><br><iframe width="560" height="315" src="https://www.youtube.com/embed/_h1pzSTATUk?si=bFPf74Imu1wTdYN6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> </div>
+    </div>
+    <div id="container" style="display:none;">
+        <div id="highScoreDisplay">High Score: 0</div>
+        <h3 id="pts">Points: 0</h3>
+        <div id="gameplayCanvas"></div>
+        <div id="mazeCanvas"></div>
+    </div>
+    <div id="gameButtons">
+        <button id="teleportButton">Teleport</button>
+        <button id="resetButton">Reset Game</button>
+    </div>
+    <script src="gameplay.js"></script>
+    <div id="gameOverMessage" style="display: none;">Game Over</div>
+</body>
+</html>
