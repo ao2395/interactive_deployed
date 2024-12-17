@@ -120,6 +120,7 @@ let fleeingmp3
 let difficulty = localStorage.getItem("selectedDifficulty") // retrieve difficulty
 let arena = localStorage.getItem("selectedArena") // retrieve arena
 let cosmospng
+let cosmosmp3
 function preload() { // load all images 
   oryx3png = loadImage("../images/oryx/gifs/oryxskins.png")
   grid = loadJSON(`${arena}.json`); // json file with pixel data from python program
@@ -186,6 +187,7 @@ function preload() { // load all images
   celestialmp3=loadSound("../sound/celestial.mp3")
   meltsmp3=loadSound("../sound/melts.mp3")
   cosmospng=loadImage("../images/oryx/bullets/cosmos.png")
+  cosmosmp3=loadSound("../sound/cosmos.mp3")
 }
 
 function setup() {
@@ -2162,149 +2164,149 @@ class beam{ // beam class
       beamTraversalStartEdge = random([0, gridSize - 1]);
       beamTraversalCurrentLine = beamTraversalStartEdge;
   
-    beamTraversalActive = true;
-    beamTraversalLastSpawnTime = millis();
+    beamTraversalActive = true; // start traversing
+    beamTraversalLastSpawnTime = millis(); // get last spawn time (first time here)
   }
   function updateBeamTraversal() {
     if (!beamTraversalActive) return;
   
-    let currentTime = millis();
-    // Check if enough time has passed since last spawn
+    let currentTime = millis(); 
+    // check if enough time has passed since last spawn
     if (currentTime - beamTraversalLastSpawnTime >= beamTraversalDelay) {
-      spawnBeamLine(beamTraversalDirection, beamTraversalCurrentLine);
+      spawnBeamLine(beamTraversalDirection, beamTraversalCurrentLine); // spawn beam
   
-      // Move to next line based on direction and starting edge
+      // move to next line
       if (beamTraversalDirection === 'row') {
         if (beamTraversalStartEdge === 0) {
-          beamTraversalCurrentLine++;
+          beamTraversalCurrentLine++; // going down
           if (beamTraversalCurrentLine >= gridSize) {
-            beamTraversalActive = false; // Done traversing
+            beamTraversalActive = false; // if we reach the end then we are done
           }
         } else {
-          beamTraversalCurrentLine--;
+          beamTraversalCurrentLine--; // going up
           if (beamTraversalCurrentLine < 0) {
-            beamTraversalActive = false; // Done traversing
+            beamTraversalActive = false; // if we reach then the end then wwe are doneg
           }
         }
       } else {
-        // Direction is column
-        if (beamTraversalStartEdge === 0) {
+        // direction is column
+        if (beamTraversalStartEdge === 0) { // going right
           beamTraversalCurrentLine++;
           if (beamTraversalCurrentLine >= gridSize) {
-            beamTraversalActive = false; // Done traversing
+            beamTraversalActive = false; // if we reach the end then we are done
           }
         } else {
-          beamTraversalCurrentLine--;
+          beamTraversalCurrentLine--; // going left
           if (beamTraversalCurrentLine < 0) {
-            beamTraversalActive = false; // Done traversing
+            beamTraversalActive = false;// if we reach the end then we are done
           }
         }
       }
   
-      // Update last spawn time
+      // update last spawn time
       beamTraversalLastSpawnTime = currentTime;
     }
   }
   function spawnBeamLine(direction, lineIndex) {
     if (direction === 'row') {
-      // Spawning beams along a row
-      if (lineIndex < 0 || lineIndex >= gridSize) return;
+      // spawn on row
+      if (lineIndex < 0 || lineIndex >= gridSize) return; // if not in grid return
       for (let col = 0; col < gridSize; col++) {
         let c = grid[lineIndex][col];
         if (c.r !== 0 && c.g !== 0 && c.b !== 0) {
-          // Spawn a beam at this black spot
+          // spawn a beam on non black tile
           beamarr.push(new beam(col, lineIndex)); 
         }
       }
     } else {
-      // Spawning beams along a column
-      if (lineIndex < 0 || lineIndex >= gridSize) return;
+      // along a column
+      if (lineIndex < 0 || lineIndex >= gridSize) return; // if not in grid return
       for (let row = 0; row < gridSize; row++) {
         let c = grid[row][lineIndex];
         if (c.r !== 0 && c.g !== 0 && c.b !== 0) {
-          // Spawn a beam at this black spot
+          // spawn a beam on non black tile
           beamarr.push(new beam(lineIndex, row));
         }
       }
     }
   }
   function phaseController() {
-    let currentTime = millis();
+    let currentTime = millis(); // get current time
   
-    if (OryxHP<=0){
-      currentPhase=-2;
+    if (OryxHP<=0){ // if oryx dies
+      currentPhase=-2; // death phase
 
       if (!deathflag) {
-        deathmp3.play();
+        deathmp3.play(); // play sound
         deathflag=true;
       }
 textAlign(CENTER, CENTER);
 rectMode(CORNER);
 fill(128, 128, 128, 200);
-rect(-width/2, -height/2, width,height); // Full-screen overlay
+rect(-width/2, -height/2, width,height); // overlay screen
 
-// Display the winning message
+// win message
 fill(255, 255, 0);
 textSize(40);
 text("You have vanquished Mad God Oryx!!", 0,-50);
-// Create the Back Button
+// make a back button to main menu (gpt)
 let backButton = createButton('Back to Main Menu');
 backButton.position(windowWidth / 2 - backButton.width / 2, windowHeight / 2 + 50);
 backButton.mousePressed(() => {
   window.history.back();
 });
   }
-    // Idle phase (-1) lasts 10 seconds
+    // idle phase to real phase
     if (currentPhase === -1 && currentTime >= nextPhaseTime) {
       switchToRandomPhase();
     }
   
-    // Handle Phase 8: ensure it lasts only 20 seconds
+    // if 20s have passed while in celestial switch to ranom phase
     if (currentPhase === 8 && currentTime - phaseStartTime >= phaseDuration) {
-      console.log("Phase 8 ended. Switching to random phase.");
       switchToRandomPhase();
-      return; // Ensures no overlap with other logic
+      return; 
     }
   
-    // Normal phase duration (20 seconds)
+    // switch to random phase every 20s
     if (currentPhase !== -1 && currentTime - phaseStartTime >= phaseDuration) {
       switchToRandomPhase();
       return;
     }
   
-    // Special conditions based on OryxHP
+    // spawn random beans every 7s if oryx is under 60% hp
     if (OryxHP <= 0.6 * oryxMaxHP && currentTime - spawnBeamTime >= 7000) {
       spawnRandomBeams();
       spawnBeamTime = currentTime;
     }
   
+    // switch to celestial (celestial only happens once)  at 50% hp
     if (OryxHP <= 0.5 * oryxMaxHP && !celestialTriggered) {
       celestialTriggered=true;
       celestialmp3.play()
       currentPhase = 8; // Switch to Phase 8
       phaseStartTime = millis(); // Reset timer for Phase 8
-      console.log("Phase switched to 8 at 50% HP.");
     }
   
+    // start beam traversal every 27s at 40% hp
     if (OryxHP <= 0.4 * oryxMaxHP && currentTime - beamTraversalTime >= 27000) {
       startBeamTraversal();
       heavensmp3.play()
       beamTraversalTime = currentTime;
-      console.log("Beam traversal triggered at 40% HP.");
     }
   }
   
+
   function switchToRandomPhase() {
-    let previousPhase = currentPhase;
-    let availablePhases = [0, 1, 2, 3, 4, 5, 6, 7,9]; // Exclude Phase 8 from random selection
+    let previousPhase = currentPhase; // get current phase
+    let availablePhases = [0, 1, 2, 3, 4, 5, 6, 7,9]; // all phases except celestial
   
-    // Remove previous phase to avoid repetition
+    // get  phases that are not the last one
     availablePhases = availablePhases.filter(phase => phase !== previousPhase);
-  
-    // Randomly select a new phase
+
+    // choose random phase
     currentPhase = random(availablePhases);
-    phaseStartTime = millis(); // Reset phase timer
-    console.log("Switching to Phase:", currentPhase);
+    phaseStartTime = millis(); // reset phase timer
+    // play sound accordingly 
     if (currentPhase==0){
       crumplesmp3.play()
     }
@@ -2330,8 +2332,7 @@ backButton.mousePressed(() => {
       fleeingmp3.play()
     }
     if (currentPhase == 9) {
-      // For example, play a unique sound for cosmos phase
-      // cosmosSound.play();
+      cosmosmp3.play()
     }
   }
   
@@ -2339,44 +2340,45 @@ backButton.mousePressed(() => {
 function playerHealthBar(){
   imageMode(CORNER)
   fill(255,0,0)
-  let healthX=map(playerHP,0,MaxPlayerHP,0,210)
-  rect(-width/2+40,+height/2-60,healthX,54.5*0.6,7)
-  image(healthBarpng,-width/2+5,+height/2-80,215*1.2,54.5*1.2)
+  let healthX=map(playerHP,0,MaxPlayerHP,0,210) // map current health to length of health bar
+  rect(-width/2+40,+height/2-60,healthX,54.5*0.6,7) // draw red rectangle
+  image(healthBarpng,-width/2+5,+height/2-80,215*1.2,54.5*1.2) // draw healthbar pic over it
   fill(255)
   textSize(15)
-  text(round(playerHP)+"/"+MaxPlayerHP,-width/2+115,+height/2-40)
+  text(round(playerHP)+"/"+MaxPlayerHP,-width/2+115,+height/2-40) // health bar text
   imageMode(CENTER)
-  if (playerHP<=0){
-    noLoop()
+  if (playerHP<=0){ // if player dies 
+    noLoop() // end loop
     fill(128,128,128,200)
     rectMode(CORNER)
-    rect(-width/2,-height/2,width,height)
+    rect(-width/2,-height/2,width,height) // overlay screen
     fill(255,0,0)
     textSize(40);
     textAlign(CENTER)
-    text("You have Been slain by Oryx The Mad God!!",0,-100)
+    text("You have Been slain by Oryx The Mad God!!",0,-100) // display losing message
+    // back to main menu button (gpt)
     let backButton = createButton('Back to Main Menu');
     backButton.position(windowWidth / 2 - backButton.width / 2, windowHeight / 2 + 50);
     backButton.mousePressed(() => {
       window.history.back();
     });
 }
-  playerHP+=regenRate;
-  playerHP=constrain(playerHP,0,MaxPlayerHP)
+  playerHP+=regenRate; // regen player hp
+  playerHP=constrain(playerHP,0,MaxPlayerHP) // constrain player hp
 }
 function oryxHealthBar(){
   fill(255,220,61)
-  let healthX=map(OryxHP,0,oryxMaxHP,0,1080*0.6)
-  rect(-windowWidth/2+((windowWidth-1080*0.7)/2)+55,-height/2+22,healthX,54.5*0.6,7)
-  image(oryxbarpng,0,-height/2+40,1080*0.7,124*0.7)
+  let healthX=map(OryxHP,0,oryxMaxHP,0,1080*0.6) // map oryx health to x cord
+  rect(-windowWidth/2+((windowWidth-1080*0.7)/2)+55,-height/2+22,healthX,54.5*0.6,7) // display yellow rectangle
+  image(oryxbarpng,0,-height/2+40,1080*0.7,124*0.7) // image health bar over it
   fill(255)
   textSize(15)
   rectMode(CORNER)
-  OryxHP=constrain(OryxHP,0,oryxMaxHP)
+  OryxHP=constrain(OryxHP,0,oryxMaxHP) // constrain oryx hp
 }
 
-function mousePressed(){
-  if (!apostasy.isPlaying()){
+function mousePressed(){ // user input to begin sound
+  if (!apostasy.isPlaying()){ 
     apostasy.setVolume(0.5)
     apostasy.play()
   }
