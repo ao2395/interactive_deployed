@@ -318,7 +318,7 @@ if (currentPhase == 9) {
     noFill()
     stroke(255,0,0,playerHitalpha)
     strokeWeight(400)
-    ellipse(0,0,1500,1500) // draw hit indicator
+    ellipse(0,0,1600,1600) // draw hit indicator
   }
   // all animations for the player down here includes all combination of walking, not walking, shooting, not shooting, looking left, looking right, looking up, looking down
   let dir = createVector(mouseX - width/2, mouseY - height/2);
